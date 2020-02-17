@@ -56,6 +56,11 @@ public abstract class ConvertEntitiesToTableRowsFn extends ErrorHandlingDoFn<Str
             return;
         }
 
+        Boolean isChainlink =
+         (jsonNode.get("type").asText().equals("block")) ||
+         (jsonNode.get("type").asText().equals("log") && jsonNode.get("topics").has(0) &&  jsonNode.get("topics").get(0).equals("0xd8d7ecc4800d25fa53ce0372f13a416d98907a7ef3d8d3bdd79cf4fe75529c65")) ||
+         (jsonNode.get("type").asText().equals("transaction") && jsonNode.get("input").asText().contains("0x4ab0d190"));
+
         TableRow row = new TableRow();
 
         JsonNode timestampNode = jsonNode.get(timestampFieldName);
@@ -79,6 +84,9 @@ public abstract class ConvertEntitiesToTableRowsFn extends ErrorHandlingDoFn<Str
         } else if (this.startTimestamp != null && dateTime.isBefore(TimeUtils.parseDateTime(this.startTimestamp))) {
             LOG.debug(logPrefix + String.format("Timestamp %s for entity %s of type %s is before the startTimestamp.",
                 dateTime, entityId, jsonNode.get("type")));
+        } else if (!isChainlink) {
+            LOG.debug(logPrefix + String.format("The entity %s of type %s in not related to chainlink.",
+                entityId, jsonNode.get("type")));
         } else {
             populateTableRowFields(row, element);
             LOG.info(logPrefix + String.format("Writing table row for entity %s of type %s.",

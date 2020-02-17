@@ -1,0 +1,8 @@
+[
+    {
+        "transformNamePrefix": "Ethereum",
+        "pubSubSubscriptionPrefix": "projects/vigeo-255803/subscriptions/crypto_ethereum.dataflow.bigquery",
+        "bigQueryDataset": "crypto_ethereum",
+        "startTimestamp": "2019-02-17T07:00:00Z"
+    }
+]
